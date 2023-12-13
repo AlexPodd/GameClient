@@ -1,6 +1,7 @@
 package com.mygdx.game.entity;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.Vector;
@@ -22,4 +23,5 @@ public abstract class Entity {
         this.AttackSpeed = AttackSpeed;
         this.MoveSpeed = MoveSpeed;
     }
+
 }

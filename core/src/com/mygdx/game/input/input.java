@@ -9,17 +9,16 @@ import com.mygdx.game.map.LvlManager;
 import java.util.Arrays;
 
 public class input extends InputAdapter {
-    private boolean LeftPressed, RightPressed, UpPressed, DownPressed;
+    private boolean LeftPressed, RightPressed, UpPressed, DownPressed, AttackPressed;
 
     private Vector2 direction = new Vector2();
     private Player player;
+    private LvlManager lvl;
 
-    private int[][] map;
 
     public input(Player player){
         this.player = player;
-        LvlManager lvl= new LvlManager();
-        map =  lvl.getMap();
+        lvl= new LvlManager();
     }
 
     @Override
@@ -39,6 +38,10 @@ public class input extends InputAdapter {
         if(keycode == Input.Keys.W){
             player.IsMovingUp = true;
             return UpPressed = true;
+        }
+        if(keycode == Input.Keys.SPACE){
+            player.IsAttacking = true;
+            return AttackPressed = true;
         }
         return false;
     }
@@ -71,27 +74,30 @@ public class input extends InputAdapter {
 
     public Vector2 getDir(){
         direction.set(0,0);
+        if (player.IsAttacking){
+        return direction;
+        }
             if(LeftPressed){
-                if(!player.CanMoveHere(map)){
+                if(!player.CanMoveHere(lvl.map)){
                     return direction;
                 }
                 direction.add(-player.getMoveSpeed(),0);
             }
             if(RightPressed){
-               if(!player.CanMoveHere(map)){
+               if(!player.CanMoveHere(lvl.map)){
                    return direction;
                }
                 direction.add(player.getMoveSpeed(),0);
             }
         if(UpPressed){
-            if(!player.CanMoveHere(map)){
+            if(!player.CanMoveHere(lvl.map)){
                 return direction;
             }
             direction.add(0,player.getMoveSpeed());
         }
 
         if(DownPressed){
-            if(!player.CanMoveHere(map)){
+            if(!player.CanMoveHere(lvl.map)){
                 return direction;
             }
             direction.add(0,-player.getMoveSpeed());

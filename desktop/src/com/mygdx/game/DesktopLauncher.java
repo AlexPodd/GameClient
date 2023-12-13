@@ -10,6 +10,8 @@ public class DesktopLauncher {
 		config.setTitle("HeroAdventure");
 		config.setWindowedMode(1280,720);
 		config.setForegroundFPS(60);
-		new Lwjgl3Application(new myapp(), config);
+		config.setResizable(false);
+		myapp1 app = new myapp1();
+		new Lwjgl3Application(app, config);
 	}
 }
