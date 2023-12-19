@@ -3,7 +3,6 @@ package com.mygdx.game.entity;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Skeleton extends Enemy{
@@ -14,15 +13,9 @@ public class Skeleton extends Enemy{
         texture = new Texture("Skeleton/SpriteSheet.png");
         EnemyAnim = new TextureRegion[texture.getWidth()][texture.getHeight()];
         pos.set(x,y);
-        CreateHitbox();
         CreateAnim();
         projectile = new Projectile();
     }
-    public Circle GetProj(){
-        return projectile.projectileCircle;
-    }
-
-
 
     @Override
     protected void CreateAnim() {
@@ -30,32 +23,12 @@ public class Skeleton extends Enemy{
     }
 
     @Override
-    protected void CreateHitbox() {
-        super.CreateHitbox();
-    }
-
-
-    @Override
     protected void Animation(Batch batch) {
         super.Animation(batch);
     }
-
-    @Override
-    protected void Attack(Vector2 PlayerPos, Batch batch) {
-            Vector2 StartPos = new Vector2(pos);
-             projectile = new Projectile(StartPos, PlayerPos);
-    }
-
     @Override
     protected void RandomMoving() {
         super.RandomMoving();
-    }
-
-    public void GetDamaged(float Damage){
-        HP -=Damage;
-        if(HP<0){
-
-        }
     }
 
     @Override
@@ -64,31 +37,21 @@ public class Skeleton extends Enemy{
     }
 
     @Override
-    public void render(Batch batch, Vector2 PlayerPos) {
-        if(IsAttacking){
-            projectile.UpdateProj();
-            projectile.RenderProj(batch);
-        }
-        super.render(batch, PlayerPos);
+    public void render(Batch batch, Vector2 PosProj) {
+        projectile = new Projectile(PosProj);
+
+        projectile.RenderProj(batch);
+        super.render(batch);
     }
     class Projectile{
         private Texture projectileTexture;
-        private Vector2 velocity;
-        private Circle projectileCircle;
         private Vector2 PosProj;
-        public Projectile(){
-
-        }
-        public Projectile(Vector2 StartPos, Vector2 EndPos){
+        public Projectile(Vector2 PosProj){
+            this.PosProj = PosProj;
             projectileTexture = new Texture("Skeleton/зуб.png");
-            PosProj = StartPos;
-            projectileCircle = new Circle(StartPos.x+8, StartPos.y+8, 1);
-            velocity = EndPos.cpy().sub(pos).nor().scl(1.5F);
         }
-        public void UpdateProj(){
-            PosProj.add(velocity);
-            projectileCircle.setPosition(PosProj);
-        }
+        public Projectile(){}
+
         public void RenderProj(Batch batch){
             batch.draw(projectileTexture, PosProj.x,PosProj.y);
         }

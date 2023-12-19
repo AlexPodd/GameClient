@@ -33,6 +33,16 @@ public class UDPClient {
 
         return Message;
     }
+    public void SendConnectMessage(String Message) throws UnknownHostException {
+        byte[] msgBuffer = new byte[1024];
+        msgBuffer = Message.getBytes();
+        DatagramPacket packet = new DatagramPacket(msgBuffer,msgBuffer.length, InetAddress.getByName(SERVER_NAME), serverPort);
+        try {
+            udpSocket.send(packet);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void SendMessage(String Message) throws IOException {
         byte[] msgBuffer = new byte[1024];
@@ -41,7 +51,6 @@ public class UDPClient {
         sum = calculateChecksum(Message);
         Message =Message+" "+(sum);
         msgBuffer = Message.getBytes();
-
         DatagramPacket packet = new DatagramPacket(msgBuffer,msgBuffer.length, InetAddress.getByName(SERVER_NAME), serverPort);
         udpSocket.send(packet);
 
@@ -94,20 +103,4 @@ public class UDPClient {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         return String.valueOf(timestamp);
     }
-
-
-    public static void main(String[] args) {
-        try {
-            UDPClient client = new UDPClient(15913,"localhost", new DatagramSocket());
-            client.SendMessage("123");
-            client.ReceiveMessage();
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-
 }

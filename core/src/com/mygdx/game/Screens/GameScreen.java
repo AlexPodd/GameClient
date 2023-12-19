@@ -1,20 +1,12 @@
-package com.mygdx.game.GameState;
+package com.mygdx.game.Screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.MyGame;
 import com.mygdx.game.ServernayaChast.UDPClient;
 import com.mygdx.game.entity.Enemy;
 import com.mygdx.game.entity.Player;
@@ -22,19 +14,16 @@ import com.mygdx.game.entity.Skeleton;
 import com.mygdx.game.input.input;
 import com.mygdx.game.map.AnimatedMap;
 import com.mygdx.game.map.LvlManager;
-import com.mygdx.game.myapp1;
-
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.sql.Array;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 
-public class InGame {
+public class GameScreen extends ScreenAdapter {
 
 
     private Player player;
@@ -65,11 +54,9 @@ public class InGame {
 
     private Enemy[] Entities;
 
-
-
-    public void Create(){
-
-
+    private MyGame game;
+    public GameScreen(MyGame game){
+        this.game = game;
         Message = new LinkedList<>();
         CurrentPlayerPos = new Vector2();
         dir = new Vector2();
@@ -82,22 +69,25 @@ public class InGame {
         TileSize = 32;
         player = new Player(0, 0, 6, 0, 0.3F, 1, PlayerText);
         inputProcessor = new input(player);
-        Gdx.input.setInputProcessor(inputProcessor);
+
         camera = new OrthographicCamera(WIDTH, HEIGHT);    // 6
         camera.position.set(WIDTH / 2, HEIGHT / 2, 0);
         player1 = new Player(0, 0, 6, 0, 0.3F, 1, PlayerText);
         Skeleton first = new Skeleton(100,100,0,0,2,0);
         Entities = new Enemy[10];
         Entities[0] = first;
-        try {
-            client = new UDPClient(15914, "localhost", new DatagramSocket());
-            Update();
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
-        }
+        client = game.getUdpClient();
+        Update();
 
         animatedMap = new AnimatedMap(lvlManager.map);
     }
+
+    @Override
+    public void show() {
+        super.show();
+        Gdx.input.setInputProcessor(inputProcessor);
+    }
+
     private void UpdatePlayerPos() {
         if (player.getNumber() == 1) {
         /*    PredictPlayerPos.set(CurrentGS.LastZap, CurrentGS.Pl1Pos);
@@ -126,59 +116,63 @@ public class InGame {
             }
         }
     }
-   public void render(){
+
+    public void render(){
 
 
 
-       ScreenUtils.clear(1, 1, 1, 1);
-       dir.set(inputProcessor.getDir());
-       player.MoveTo(dir);
-       PredictInput.add(dir);
-       PredictPlayerPos.add(player.getPos());
+        ScreenUtils.clear(1, 1, 1, 1);
+        dir.set(inputProcessor.getDir());
+        player.MoveTo(dir);
+        PredictInput.add(dir);
+        PredictPlayerPos.add(player.getPos());
 
-       try {
-           Message.add(client.NewMessage(String.valueOf(dir)));
-           client.SendMessage(String.valueOf(dir));
-           client.IncZap();
-       } catch (IOException e) {
-           throw new RuntimeException(e);
-       }
+        try {
+            Message.add(client.NewMessage(String.valueOf(dir)));
+            client.SendMessage(String.valueOf(dir));
+            client.IncZap();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-       camera.position.set(player.getX(), player.getY(), 0);
-       camera.update();
-
-
-       if (player.getNumber() == 1) {
-           synchronized (CurrentGS) {
-               synchronized (PreviousGS) {
-                   player1.InterPolation(PreviousGS.Pl2Pos.x, PreviousGS.Pl2Pos.y, CurrentGS.Pl2Pos.x, CurrentGS.Pl2Pos.y, PreviousGS.getTimestamp(), CurrentGS.getTimestamp());
-                   if(player.getPos()!=CurrentGS.Pl1Pos) {
-                       UpdatePlayerPos();
-                       UpdateInfo();
-                   }
-               }
-           }
-       }
-       if (player.getNumber() == 2) {
-           synchronized (CurrentGS) {
-               synchronized (PreviousGS) {
-                   player1.InterPolation(PreviousGS.Pl1Pos.x, PreviousGS.Pl1Pos.y, CurrentGS.Pl1Pos.x, CurrentGS.Pl1Pos.y, PreviousGS.getTimestamp(), CurrentGS.getTimestamp());
-                   if(player.getPos()!=CurrentGS.Pl2Pos) {
-                       UpdatePlayerPos();
-                       UpdateInfo();
-                   }
-               }
-           }
-       }
+        camera.position.set(player.getX(), player.getY(), 0);
+        camera.update();
 
 
+        if (player.getNumber() == 1) {
+            synchronized (CurrentGS) {
+                synchronized (PreviousGS) {
+                    player1.InterPolation(PreviousGS.Pl2Pos.x, PreviousGS.Pl2Pos.y, CurrentGS.Pl2Pos.x, CurrentGS.Pl2Pos.y, PreviousGS.getTimestamp(), CurrentGS.getTimestamp());
+                    if(player.getPos()!=CurrentGS.Pl1Pos) {
+                        UpdatePlayerPos();
+                        UpdateInfo();
+                    }
+                }
+            }
+        }
+        if (player.getNumber() == 2) {
+            synchronized (CurrentGS) {
+                synchronized (PreviousGS) {
+                    player1.InterPolation(PreviousGS.Pl1Pos.x, PreviousGS.Pl1Pos.y, CurrentGS.Pl1Pos.x, CurrentGS.Pl1Pos.y, PreviousGS.getTimestamp(), CurrentGS.getTimestamp());
+                    if(player.getPos()!=CurrentGS.Pl2Pos) {
+                        UpdatePlayerPos();
+                        UpdateInfo();
+                    }
+                }
+            }
+        }
 
 
-       lvlManager.RenderMap(camera,player,player1, Entities);
-
-   }
 
 
+        lvlManager.RenderMap(camera,player,player1, Entities);
+
+    }
+
+    @Override
+    public void render(float delta) {
+        render();
+    }
 
     public void Update() {
         Thread udpClientThread = new Thread(new Runnable() {
@@ -187,7 +181,6 @@ public class InGame {
                 while (true) {
                     try {
                         String message = client.ReceiveMessage();
-                        System.out.println(message);
                         if (message.equals(null)) {
                             CurrentGS = PreviousGS;
                             continue;
@@ -202,12 +195,8 @@ public class InGame {
                                 } catch (ParseException e) {
                                     throw new RuntimeException(e);
                                 }
-                                if (PreviousGS.getTimestamp().after(parsedDate)) {
-
-                                } else {
-                                    PreviousGS = CurrentGS;
-                                    CurrentGS = UpdateGameState(message);
-                                }
+                                PreviousGS = CurrentGS;
+                                CurrentGS = UpdateGameState(message);
                             }
                         }
 
@@ -266,9 +255,9 @@ public class InGame {
         }
         int LastServerZap = Integer.parseInt(InputWords[5]);
 
-        HPPL1 = Float.valueOf(String.valueOf(InputWords[3].charAt(InputWords[3].length()-3)));
+        HPPL1 = Float.valueOf(String.valueOf(InputWords[3].charAt(InputWords[3].length()-1)));
 
-        HPPL2 =  Float.valueOf(String.valueOf(InputWords[4].charAt(InputWords[4].length()-3)));
+        HPPL2 =  Float.valueOf(String.valueOf(InputWords[4].charAt(InputWords[4].length()-1)));
 
         return new GameState(new Timestamp(parsedDate.getTime()), new Vector2(Float.valueOf(PosX1), Float.valueOf(PosY1)), new Vector2(Float.valueOf(PosX2), Float.valueOf(PosY2)), LastServerZap, HPPL1, HPPL2);
     }
@@ -304,3 +293,4 @@ public class InGame {
         }
     }
 }
+

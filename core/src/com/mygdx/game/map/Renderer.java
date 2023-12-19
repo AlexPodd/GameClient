@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.entity.Enemy;
 import com.mygdx.game.entity.Player;
 
@@ -31,7 +32,7 @@ public class Renderer extends OrthogonalTiledMapRenderer {
                 player1.render(getBatch());
                 player2.render(getBatch());
                 for (int i = 0; i < 1; i++) {
-                    enemies[i].render(getBatch(), player1.getPos());
+                    enemies[i].render(getBatch(), new Vector2(10,10));
                 }
             }
             renderMapLayer(layer);
