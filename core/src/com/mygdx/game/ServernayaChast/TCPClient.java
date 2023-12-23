@@ -44,7 +44,6 @@ public class TCPClient implements TCPConnectionListener {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        this.myIP = connection.getIP();
 }
 
     @Override
