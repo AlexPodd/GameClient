@@ -21,6 +21,8 @@ import com.mygdx.game.GameState.HUD;
 import com.mygdx.game.entity.Enemy;
 import com.mygdx.game.entity.Player;
 
+import java.util.LinkedList;
+
 public class LvlManager {
     public TiledMap map;
     public Renderer renderer;
@@ -35,9 +37,9 @@ public LvlManager(){
      hud = new HUD((Viewport) new ScreenViewport(), renderer.getBatch());
 
 }
-public void RenderMap(Camera camera, Player player1, Player player2, Enemy[] enemies){
+public void RenderMap(Camera camera, Player player1, Player player2, LinkedList<Enemy> enemies){
     renderer.setView((OrthographicCamera) camera);
-    renderer.render(player1, player2,enemies);
+    renderer.render(player1, player2, enemies);
     hud.UpdateHud(player1.GetHP());
     hud.draw();
     boolean opendoor = false;
@@ -46,16 +48,16 @@ public void RenderMap(Camera camera, Player player1, Player player2, Enemy[] ene
     for (int i = 0; i < objectCount; i++) {
         MapObject object = objects.get(i);
         Rectangle objectBounds = ((RectangleMapObject) object).getRectangle();
-        if (objectBounds.contains(player1.getX() / 2, player1.getY() / 2) || objectBounds.contains(player2.getX() / 2, player2.getY() / 2)
+        if (objectBounds.contains(player1.getPos().x / 2, player1.getPos().y / 2) || objectBounds.contains(player2.getPos().x / 2, player2.getPos().y / 2)
         ) {
             OpenDoor();
             opendoor = true;
             player1.OpenDoor = true;
             }
         }
-    /*if (!opendoor){
+     if(!opendoor){
         CloseDoor();
-    }*/
+    }
     }
 public void OpenDoor(){
    map.getLayers().get("ОткрытаяДверь").setVisible(true);

@@ -12,9 +12,12 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setResizable(false);
 
-		String IP = "localhost";
+		String IP = "188.120.240.217";
+		//String IP = "localhost";
 		int TCPPort = 8081;
 		int UDPPort = 15914;
+
+
 		MyGame app = new MyGame(IP, TCPPort, UDPPort);
 		new Lwjgl3Application(app, config);
 	}

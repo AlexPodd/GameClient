@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class HUD {
     private Stage stage;
-    private Image heartImage;
+    private Image heartImage, heartImage1, heartImage2;
 
     private Texture Halfheart;
     private Texture FullHeart;
@@ -26,36 +26,113 @@ public class HUD {
         Halfheart = new Texture("сердце2.png");
         EmptyHeart = new Texture("сердце3.png");
         heartImage = new Image(FullHeart);
+        heartImage1 = new Image(FullHeart);
+        heartImage2 = new Image(FullHeart);
         // Установка позиции сердечка на экране
         heartImage.setPosition(0, 0);
+        heartImage1.setPosition(64, 0);
+        heartImage2.setPosition(128, 0);
 
         // Добавление сердечка на сцену
         stage.addActor(heartImage);
+        stage.addActor(heartImage1);
+        stage.addActor(heartImage2);
     }
 
     public void draw() {
         stage.draw();
     }
     public void UpdateHud(float Healt){
-        if (Healt == 2.0){
+        if(Healt == 6.0){
             stage.clear();
             heartImage = new Image(FullHeart);
+            heartImage1 = new Image(FullHeart);
+            heartImage2 = new Image(FullHeart);
             heartImage.setPosition(0, 0);
+            heartImage1.setPosition(64, 0);
+            heartImage2.setPosition(128, 0);
             stage.addActor(heartImage);
+            stage.addActor(heartImage1);
+            stage.addActor(heartImage2);
             return;
         }
-        if (Healt == 1.0){
+        if(Healt == 5.0){
+            stage.clear();
+            heartImage = new Image(FullHeart);
+            heartImage1 = new Image(FullHeart);
+            heartImage2 = new Image(Halfheart);
+            heartImage.setPosition(0, 0);
+            heartImage1.setPosition(64, 0);
+            heartImage2.setPosition(128, 0);
+            stage.addActor(heartImage);
+            stage.addActor(heartImage1);
+            stage.addActor(heartImage2);
+            return;
+        }
+        if(Healt == 4.0){
+            stage.clear();
+            heartImage = new Image(FullHeart);
+            heartImage1 = new Image(FullHeart);
+            heartImage2 = new Image(EmptyHeart);
+            heartImage.setPosition(0, 0);
+            heartImage1.setPosition(64, 0);
+            heartImage2.setPosition(128, 0);
+            stage.addActor(heartImage);
+            stage.addActor(heartImage1);
+            stage.addActor(heartImage2);
+            return;
+        }
+        if(Healt == 3.0){
+            stage.clear();
+            heartImage = new Image(FullHeart);
+            heartImage1 = new Image(Halfheart);
+            heartImage2 = new Image(EmptyHeart);
+            heartImage.setPosition(0, 0);
+            heartImage1.setPosition(64, 0);
+            heartImage2.setPosition(128, 0);
+            stage.addActor(heartImage);
+            stage.addActor(heartImage1);
+            stage.addActor(heartImage2);
+            return;
+        }
+        if(Healt == 2.0){
+            stage.clear();
+            heartImage = new Image(FullHeart);
+            heartImage1 = new Image(EmptyHeart);
+            heartImage2 = new Image(EmptyHeart);
+            heartImage.setPosition(0, 0);
+            heartImage1.setPosition(64, 0);
+            heartImage2.setPosition(128, 0);
+            stage.addActor(heartImage);
+            stage.addActor(heartImage1);
+            stage.addActor(heartImage2);
+            return;
+        }
+        if(Healt == 1.0){
             stage.clear();
             heartImage = new Image(Halfheart);
+            heartImage1 = new Image(EmptyHeart);
+            heartImage2 = new Image(EmptyHeart);
             heartImage.setPosition(0, 0);
+            heartImage1.setPosition(64, 0);
+            heartImage2.setPosition(128, 0);
             stage.addActor(heartImage);
+            stage.addActor(heartImage1);
+            stage.addActor(heartImage2);
             return;
         }
-        else {
+        if(Healt == 0.0){
             stage.clear();
             heartImage = new Image(EmptyHeart);
+            heartImage1 = new Image(EmptyHeart);
+            heartImage2 = new Image(EmptyHeart);
             heartImage.setPosition(0, 0);
+            heartImage1.setPosition(64, 0);
+            heartImage2.setPosition(128, 0);
             stage.addActor(heartImage);
+            stage.addActor(heartImage1);
+            stage.addActor(heartImage2);
+            return;
         }
     }
 }

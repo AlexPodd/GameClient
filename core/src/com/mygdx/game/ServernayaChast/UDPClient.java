@@ -34,7 +34,7 @@ public class UDPClient {
         return Message;
     }
     public void SendConnectMessage(String Message) throws UnknownHostException {
-        byte[] msgBuffer = new byte[1024];
+        byte[] msgBuffer;
         msgBuffer = Message.getBytes();
         DatagramPacket packet = new DatagramPacket(msgBuffer,msgBuffer.length, InetAddress.getByName(SERVER_NAME), serverPort);
         try {
@@ -94,7 +94,16 @@ public class UDPClient {
         byte[] Receive = new byte[512];
         DatagramPacket receive = new DatagramPacket(Receive, Receive.length);
         udpSocket.receive(receive);
-        return new String(receive.getData(), receive.getOffset(), receive.getLength());
+        String Message = new String(receive.getData(), receive.getOffset(), receive.getLength());
+        String[] words = Message.split(" "); // Разбиваем строку на массив слов
+        StringBuilder result = new StringBuilder();
+
+// Проходимся по всем словам, кроме последнего
+        for (int i = 0; i < words.length - 1; i++) {
+            result.append(words[i]).append(" ");
+        }
+
+        return result.toString().trim();
     }
     public void SocketClose(){
         udpSocket.close();

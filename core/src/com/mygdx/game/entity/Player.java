@@ -29,23 +29,13 @@ public class Player extends Entity {
         return pos;
     }
 
-    public boolean IsMovingLeft;
-    public boolean IsMovingRight;
-    public boolean IsMovingUp;
-    public boolean IsMovingDown;
-
     public boolean OpenDoor;
     public boolean IsStaying;
-
-    public final int width = 16;
-    public final int hight = 32;
-
-    private Rectangle Hitbox;
-    private Vector2 pos = new Vector2();
+    private String Attack;
 
     private float stateTime, AttakingTime;
     private int number;
-    public boolean IsAttacking;
+
 
     public void setNumber(int number) {
         this.number = number;
@@ -54,18 +44,13 @@ public class Player extends Entity {
     public int getNumber() {
         return number;
     }
-    public void SetPos(Vector2 UpdatePos){
-        pos.set(UpdatePos);
-        Hitbox.set(UpdatePos.x,UpdatePos.y,width,hight);
-    }
     public float GetHP(){
         return HP;
     }
     private Animation RightwalkAnimation, UpwalkAnimation, DownwalkAnimation, LeftwalkAnimation, DownAttackAnimation,LeftAttackAnimation, RightAttackAnimation, UpAttackAnimation ;
 
     public Player(float x, float y, float HP, float Damage, float AttackSpeed, float MoveSpeed, Texture text) {
-        super(x, y, HP, Damage, AttackSpeed, MoveSpeed);
-        pos.set(x, y);
+        super(x, y, HP, Damage, AttackSpeed, MoveSpeed, 16, 32);
         IsAttacking = false;
         Hitbox = CreateHitbox();
         textPl = new TextureRegion[text.getWidth()][text.getHeight()];
@@ -140,9 +125,17 @@ public class Player extends Entity {
         LeftAttack[2] = textPlAttack[2][3];
         LeftAttack[3] = textPlAttack[3][3];
        LeftAttackAnimation = new Animation(0.1f,LeftAttack);
-
+    Attack ="NN";
     }
-
+    public String GetAttack(){
+        String temp = Attack;
+        Attack = "NN";
+        return temp;
+    }
+    public void setAttack(String attack){
+        this.Attack = attack;
+        this.IsAttacking = true;
+    }
     public void SetHp(float HP){
         this.HP = HP;
     }
@@ -166,6 +159,50 @@ public class Player extends Entity {
             Animation(batch);
         }
     }
+    public void AnimationAttack(Batch batch) {
+        while (Attack.equals("DA")){
+            TextureRegion currentFrame = (TextureRegion) DownAttackAnimation.getKeyFrame(AttakingTime, false);
+            batch.draw(currentFrame, pos.x, pos.y, 32, 36);
+            return;
+        }
+        while (Attack.equals("UA")){
+            TextureRegion currentFrame = (TextureRegion) UpAttackAnimation.getKeyFrame(AttakingTime, false);
+            batch.draw(currentFrame, pos.x, pos.y, 32, 36);
+            return;
+        }
+        while (Attack.equals("LA")){
+            TextureRegion currentFrame = (TextureRegion) LeftAttackAnimation.getKeyFrame(AttakingTime, false);
+            batch.draw(currentFrame, pos.x, pos.y, 32, 36);
+            return;
+        }
+        while (Attack.equals("RA")){
+            TextureRegion currentFrame = (TextureRegion) RightAttackAnimation.getKeyFrame(AttakingTime, false);
+            batch.draw(currentFrame, pos.x, pos.y, 32, 36);
+            return;
+        }
+    }
+    public void renderPlayer2(Batch batch) {
+        if(!IsAttacking){
+            AttakingTime = 0F;
+        }
+        if(AttakingTime > AttackSpeed){
+            IsAttacking = false;
+        }
+        if(IsAttacking){
+            AttakingTime+=Gdx.graphics.getDeltaTime();
+            AnimationAttack(batch);
+            return;
+        }
+        stateTime += Gdx.graphics.getDeltaTime();
+        if (!(IsMovingLeft) && !(IsMovingDown) && !(IsMovingRight) && !(IsMovingUp)) {
+            IsStaying = true;
+            Animation(batch);
+
+        } else {
+            IsStaying = false;
+            Animation(batch);
+        }
+    }
 
 
 
@@ -174,46 +211,30 @@ public class Player extends Entity {
         return MoveSpeed;
     }
 
-    public Rectangle CreateHitbox() {
-        return Hitbox = new Rectangle(pos.x, pos.y, width, hight);
-    }
-
-    public void MoveTo(Vector2 dir) {
-        pos.add(dir);
-        Hitbox.set(pos.x, pos.y, width, hight);
-    }
-
-    public Rectangle getObjectHitbox() {
-        return Hitbox;
-    }
-
-    public float getX() {
-        return pos.x;
-    }
-
-    public float getY() {
-        return pos.y;
-    }
 
     public void Animation(Batch batch) {
        while (IsAttacking&&IsMovingDown){
            TextureRegion currentFrame = (TextureRegion) DownAttackAnimation.getKeyFrame(AttakingTime, false);
            batch.draw(currentFrame, pos.x, pos.y, 32, 36);
+           Attack = "DA";
             return;
         }
         while (IsAttacking&&IsMovingUp){
             TextureRegion currentFrame = (TextureRegion) UpAttackAnimation.getKeyFrame(AttakingTime, false);
             batch.draw(currentFrame, pos.x, pos.y, 32, 36);
+            Attack = "UA";
             return;
         }
         while (IsAttacking&&IsMovingLeft){
             TextureRegion currentFrame = (TextureRegion) LeftAttackAnimation.getKeyFrame(AttakingTime, false);
             batch.draw(currentFrame, pos.x, pos.y, 32, 36);
+            Attack = "LA";
             return;
         }
         while (IsAttacking&&IsMovingRight){
             TextureRegion currentFrame = (TextureRegion) RightAttackAnimation.getKeyFrame(AttakingTime, false);
             batch.draw(currentFrame, pos.x, pos.y, 32, 36);
+            Attack = "RA";
             return;
         }
         while (IsMovingRight) {
@@ -242,177 +263,15 @@ public class Player extends Entity {
             return;
         }
     }
-
-
-
-
-
-
-    public int GetXPosTile1(float Correcter) {
-        int counter = 0;
-        float position;
-        position = pos.x + Correcter;
-        while (position - 32 > 0) {
-            counter++;
-            position -= 32;
-        }
-        return counter;
-    }
-
-    public int GetXPosTile2(float Correcter) {
-        int counter = 0;
-        float position;
-        position = pos.x + Correcter;
-        while (position - 32 > 0) {
-            counter++;
-            position -= 32;
-        }
-        return counter;
-    }
-
-    public int GetXPosTile3(float Correcter) {
-        int counter = 0;
-        float position;
-        position = pos.x + width + Correcter;
-        while (position - 32 > 0) {
-            counter++;
-            position -= 32;
-        }
-        return counter;
-    }
-
-    public int GetXPosTile4(float Correcter) {
-        int counter = 0;
-        float position;
-        position = pos.x + width + Correcter;
-        while (position - 32 > 0) {
-            counter++;
-            position -= 32;
-        }
-        return counter;
-    }
-
-    public int GetYPosTile1(float Correcter) {
-        int counter = 0;
-        float position;
-        position = pos.y + Correcter;
-        while (position - 32 > 0) {
-            counter++;
-            position -= 32;
-        }
-        return counter;
-    }
-
-    public int GetYPosTile2(float Correcter) {
-        int counter = 0;
-        float position;
-        position = pos.y + hight + Correcter;
-        while (position - 32 > 0) {
-            counter++;
-            position -= 32;
-        }
-        return counter;
-    }
-
-    public int GetYPosTile3(float Correcter) {
-        int counter = 0;
-        float position;
-        position = pos.y + hight + Correcter;
-        while (position - 32 > 0) {
-            counter++;
-            position -= 32;
-        }
-        return counter;
-    }
-
-    public int GetYPosTile4(float Correcter) {
-        int counter = 0;
-        float position;
-        position = pos.y + Correcter;
-        while (position - 32 > 0) {
-            counter++;
-            position -= 32;
-        }
-        return counter;
-    }
-
+    @Override
     public boolean CanMoveHere(TiledMap map) {
-        TiledMapTileLayer tileLayer = (TiledMapTileLayer) map.getLayers().get("Непроходимые");
-        TiledMapTileLayer tileLayer1 = (TiledMapTileLayer) map.getLayers().get("верхний слой");
         if(OpenDoor){
-           if( Door(map)){
-               return true;
-           }
-        }
-        if (IsMovingRight) {
-            if(pos.x+MoveSpeed > 3168){
-                return false;
-            }
-            if (((tileLayer.getCell(GetXPosTile1(MoveSpeed), GetYPosTile1(0)) != null) ||
-                    (tileLayer.getCell(GetXPosTile2(MoveSpeed), GetYPosTile2(0)) != null) ||
-                    (tileLayer.getCell(GetXPosTile3(MoveSpeed), GetYPosTile3(0)) != null) ||
-                    (tileLayer.getCell(GetXPosTile4(MoveSpeed), GetYPosTile4(0)) != null)) &&
-                    ((tileLayer1.getCell(GetXPosTile3(MoveSpeed), GetYPosTile3(0)) == null) &&
-                    (tileLayer1.getCell(GetXPosTile4(MoveSpeed), GetYPosTile4(0)) == null) )
-            ) {
-                return false;
+            if( Door(map)){
+                return true;
             }
         }
-        if (IsMovingLeft) {
-            if(pos.x-MoveSpeed <0){
-                return false;
-            }
-            if (((tileLayer.getCell(GetXPosTile1(-MoveSpeed), GetYPosTile1(0)) != null) ||
-                    (tileLayer.getCell(GetXPosTile2(-MoveSpeed), GetYPosTile2(0)) != null) ||
-                    (tileLayer.getCell(GetXPosTile3(-MoveSpeed), GetYPosTile3(0)) != null) ||
-                    (tileLayer.getCell(GetXPosTile4(-MoveSpeed), GetYPosTile4(0)) != null)) &&
-                    ((tileLayer1.getCell(GetXPosTile1(-MoveSpeed), GetYPosTile1(0)) == null) &&
-                            (tileLayer1.getCell(GetXPosTile2(-MoveSpeed), GetYPosTile2(0)) == null)
-                             )
-            ){
-                return false;
-            }
-        }
-        if (IsMovingUp) {
-            if(pos.y+MoveSpeed > 3168){
-                return false;
-            }
-            if (((tileLayer.getCell(GetXPosTile1(0), GetYPosTile1(MoveSpeed)) != null) ||
-                    (tileLayer.getCell(GetXPosTile2(0), GetYPosTile2(MoveSpeed)) != null) ||
-                    (tileLayer.getCell(GetXPosTile3(0), GetYPosTile3(MoveSpeed)) != null) ||
-                    (tileLayer.getCell(GetXPosTile4(0), GetYPosTile4(MoveSpeed)) != null)) &&
-                    (
-                            (tileLayer1.getCell(GetXPosTile2(0), GetYPosTile2(MoveSpeed)) == null) &&
-                            (tileLayer1.getCell(GetXPosTile3(0), GetYPosTile3(MoveSpeed)) == null)
-                           )
-            ){
-                return false;
-            }
-        }
-
-        if (IsMovingDown) {
-
-            if(pos.y-MoveSpeed <0){
-                return false;
-            }
-            if  (((tileLayer.getCell(GetXPosTile1(0), GetYPosTile1(-MoveSpeed)) != null) ||
-                    (tileLayer.getCell(GetXPosTile2(0), GetYPosTile2(-MoveSpeed)) != null) ||
-                    (tileLayer.getCell(GetXPosTile3(0), GetYPosTile3(-MoveSpeed)) != null) ||
-                    (tileLayer.getCell(GetXPosTile4(0), GetYPosTile4(-MoveSpeed)) != null)) &&
-                    ((tileLayer1.getCell(GetXPosTile1(0), GetYPosTile1(-MoveSpeed)) == null) &&
-                            (tileLayer1.getCell(GetXPosTile4(0), GetYPosTile4(-MoveSpeed)) == null) )
-            ){
-                return false;
-            }
-        }
-
-
-
-
-        return true;
+        return super.CanMoveHere(map);
     }
-
-
 
 
     private boolean Door(TiledMap map){
@@ -460,94 +319,8 @@ public class Player extends Entity {
         return false;
     }
 
-    public void InterPolation(float prevX, float prevY, float x, float y, Timestamp start, Timestamp end){
-        ObjectInterpolator Inter = new ObjectInterpolator(
-                prevX,
-                prevY,
-                x,
-                y,
-                start,
-                end,
-                Gdx.graphics.getDeltaTime()
-        );
-        Inter.startInterpolation();
-
-        Inter.update();
-
-    }
-    public class ObjectInterpolator {
-        private float startX, startY; // Начальные координаты объекта
-        private float endX, endY;     // Конечные координаты объекта
-        private float duration;        // Длительность интерполяции в секундах
-        private float currentTime;     // Текущее время интерполяции
-        private boolean isInterpolating; // Флаг, указывающий, идет ли в данный момент интерполяция
-        private float delta;
-        public ObjectInterpolator(float startX, float startY, float endX, float endY, Timestamp StartTs, Timestamp EndTs,float delta) {
-            this.startX = startX;
-            this.delta = delta;
-            this.startY = startY;
-            this.endX = endX;
-            this.endY = endY;
-            if (StartTs.equals(EndTs)){
-                duration = 0.01F;
-            }
-            else {
-                duration = EndTs.getTime() - StartTs.getTime();
-            }
-            this.currentTime = 0f;
-            this.isInterpolating = false;
-        }
-
-        public void startInterpolation() {
-            isInterpolating = true;
-            currentTime = 0f;
-            if (startX - endX != 1 || startX - endX != -1 || startY - endY != 1 || startY - endY != -1) {
-                if (startX < endX) {
-                    IsMovingRight = true;
-                } else {
-                    IsMovingRight = false;
-                }
-                if (startX > endX) {
-                    IsMovingLeft = true;
-                } else {
-                    IsMovingLeft = false;
-                }
-                if (startY < endY) {
-                    IsMovingUp = true;
-                } else {
-                    IsMovingUp = false;
-                }
-                if (startY > endY) {
-                    IsMovingDown = true;
-                } else {
-                    IsMovingDown = false;
-                }
-            }
-        }
-        public void update() {
-            while (isInterpolating){
-                currentTime += delta;
-                if (currentTime >= duration) {
-                    currentTime = duration;
-                    isInterpolating = false;
-                }
-
-                float progress = currentTime / duration;
-                // Используем метод интерполяции для вычисления текущих координат
-                float interpolatedX = Interpolation.smoother.apply(startX, endX, progress);
-                float interpolatedY = Interpolation.smoother.apply(startY, endY, progress);
-
-                // Используйте полученные координаты для обновления положения вашего объекта
-                updateObjectPosition(interpolatedX, interpolatedY);
-            }
-
-        }
-
-        private void updateObjectPosition(float x, float y) {
-            // Здесь обновите положение вашего объекта (например, установите новые координаты)
-
-            MoveTo(new Vector2(x-getX(), y-getY()));
-
-        }
+    @Override
+    public void InterPolation(float prevX, float prevY, float x, float y, Timestamp start, Timestamp end) {
+        super.InterPolation(prevX, prevY, x, y, start, end);
     }
 }

@@ -7,14 +7,27 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Skeleton extends Enemy{
     private Projectile projectile;
+    private String State;
+    private static Texture textureSkel = new Texture("Skeleton/SpriteSheet.png");
+    private static Texture ProjText = new Texture("Skeleton/зуб.png");
 
-    public Skeleton(float x, float y, float HP, float Damage, float AttackSpeed, float MoveSpeed) {
+    public Skeleton(float x, float y, float HP, float Damage, float AttackSpeed, float MoveSpeed, Vector2 PosProj) {
         super(x, y, HP, Damage, AttackSpeed, MoveSpeed);
-        texture = new Texture("Skeleton/SpriteSheet.png");
+            projectile = new Projectile(PosProj);
+        SetAnim();
+    }
+
+
+    public void setState(String state) {
+        State = state;
+    }
+
+
+    public void SetAnim(){
+        texture = textureSkel;
+        projectile.SetProjText(ProjText);
         EnemyAnim = new TextureRegion[texture.getWidth()][texture.getHeight()];
-        pos.set(x,y);
         CreateAnim();
-        projectile = new Projectile();
     }
 
     @Override
@@ -37,9 +50,7 @@ public class Skeleton extends Enemy{
     }
 
     @Override
-    public void render(Batch batch, Vector2 PosProj) {
-        projectile = new Projectile(PosProj);
-
+    public void render(Batch batch) {
         projectile.RenderProj(batch);
         super.render(batch);
     }
@@ -48,7 +59,9 @@ public class Skeleton extends Enemy{
         private Vector2 PosProj;
         public Projectile(Vector2 PosProj){
             this.PosProj = PosProj;
-            projectileTexture = new Texture("Skeleton/зуб.png");
+        }
+        public void SetProjText(Texture texture){
+            projectileTexture = texture;
         }
         public Projectile(){}
 
@@ -57,4 +70,5 @@ public class Skeleton extends Enemy{
         }
 
     }
+
 }

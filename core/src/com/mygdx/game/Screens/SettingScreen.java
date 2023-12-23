@@ -24,9 +24,6 @@ public class SettingScreen extends ScreenAdapter {
     private int screenWidth;
     private int screenHeight;
     private Texture BackGround;
-
-    private OrthographicCamera camera;
-    private Image image;
     public SettingScreen(MyGame game){
         this.game = game;
         this.skin = game.skin;
@@ -34,7 +31,6 @@ public class SettingScreen extends ScreenAdapter {
         this.screenHeight = game.screenHeight;
         this.screenWidth = game.screenWidth;
         BackGround = new Texture("BackGround.png");
-        image = new Image(BackGround);
         SettingStage();
 
     }
@@ -110,7 +106,11 @@ public class SettingScreen extends ScreenAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         ScreenUtils.clear(1, 1, 1, 1);
+        game.batch.begin();
 
+        game.batch.draw(BackGround,0,0,game.screenWidth,game.screenHeight);
+
+        game.batch.end();
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }
@@ -123,12 +123,18 @@ public class SettingScreen extends ScreenAdapter {
 
     @Override
     public void resize(int width, int height) {
-        super.resize(width, height);
-
+        if(width == 1920){
+            BackGround = new Texture("BackGroundFULLHD.png");
+        }
+        else {
+            BackGround = new Texture("BackGround.png");
+        }
     }
+
 
     @Override
     public void hide(){
         Gdx.input.setInputProcessor(null);
+        dispose();
     }
 }

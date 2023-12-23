@@ -3,16 +3,14 @@ package com.mygdx.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.CpuSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.mygdx.game.Screens.MainMenuScreen;
 import com.mygdx.game.ServernayaChast.TCPClient;
 import com.mygdx.game.ServernayaChast.UDPClient;
 
-import java.io.IOException;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
+
 import java.net.SocketException;
 
 public class MyGame extends Game {
@@ -43,6 +41,15 @@ public class MyGame extends Game {
 
 
         setScreen(new MainMenuScreen(this));
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        skin.dispose();
+        batch.dispose();
+        tcpClient.close();
+        udpClient.SocketClose();
     }
 
     public TCPClient getTcpClient() {

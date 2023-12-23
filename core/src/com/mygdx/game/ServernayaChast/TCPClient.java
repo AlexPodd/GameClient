@@ -6,13 +6,17 @@ import com.mygdx.game.Screens.EnterTheGameScreen;
 import com.mygdx.game.Screens.GameScreen;
 import com.mygdx.game.Screens.MainMenuScreen;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class TCPClient implements TCPConnectionListener {
     private TCPConnection connection;
     private MyGame game;
-    private final InetAddress myIP;
+    private InetAddress myIP;
     private final int myPort;
     public TCPClient(String IP, int Port, MyGame game){
         this.game = game;
@@ -21,17 +25,27 @@ public class TCPClient implements TCPConnectionListener {
     } catch (IOException e) {
         System.out.println("Connection exception "+ e);
     }
-     this.myIP = connection.getIP();
      this.myPort = connection.getPort();
+        URL url = null;
+        try {
+            url = new URL("http://checkip.amazonaws.com");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new InputStreamReader(url.openStream()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            String ipAddress = br.readLine().trim();
+            this.myIP = InetAddress.getByName(ipAddress);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        this.myIP = connection.getIP();
 }
-
-    public InetAddress getMyIP() {
-        return myIP;
-    }
-
-    public int getMyPort() {
-        return myPort;
-    }
 
     @Override
     public void onConnectionReady(TCPConnection topConnection) {
@@ -39,7 +53,7 @@ public class TCPClient implements TCPConnectionListener {
 
     @Override
     public void onReceiveString(TCPConnection topConnection, String values) {
-        System.out.println(values);
+
         String[] Words = values.split(" ");
         if(values.equals("NameIsBusy") || values.equals("NameIsNotFound")){
             Gdx.app.postRunnable(new Runnable() {
@@ -50,6 +64,8 @@ public class TCPClient implements TCPConnectionListener {
             });
         }
         if(Words[0].equals("E")){
+            PrepareForGame prepareForGame = PrepareForGame.getInstance();
+            prepareForGame.setEnemies(values);
             try {
                 game.getUdpClient().SendConnectMessage("Con "+myIP+":"+myPort);
             } catch (IOException e) {
@@ -79,4 +95,7 @@ public class TCPClient implements TCPConnectionListener {
         connection.sendString(value);
     }
 
+    public void close(){
+        connection.close();
+    }
 }

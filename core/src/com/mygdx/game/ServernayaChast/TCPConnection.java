@@ -56,6 +56,13 @@ public class TCPConnection {
             eventListener.onException(TCPConnection.this, e);
         }
     }
+    public void close(){
+        try {
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Override
     public String toString(){
         return socket.getInetAddress()+" "+ socket.getPort();

@@ -19,7 +19,13 @@ public class MainMenuScreen extends ScreenAdapter {
     private Stage stage;
     public MainMenuScreen(MyGame game){
     this.game = game;
-    BackGround = new Texture("BackGround.png");
+
+    if(game.screenWidth == 1920){
+        BackGround = new Texture("BackGroundFULLHD.png");
+    }
+    else {
+        BackGround = new Texture("BackGround.png");
+    }
         stage = new Stage();
         MainMenuStage();
     }
@@ -73,6 +79,12 @@ public class MainMenuScreen extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
+        if(width == 1920){
+            BackGround = new Texture("BackGroundFULLHD.png");
+        }
+        else {
+            BackGround = new Texture("BackGround.png");
+        }
     }
 
 
@@ -94,5 +106,6 @@ public class MainMenuScreen extends ScreenAdapter {
     @Override
     public void hide(){
         Gdx.input.setInputProcessor(null);
+        dispose();
     }
 }
